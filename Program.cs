@@ -2,7 +2,7 @@
 using TextRPG;
 internal class Program
 {
-    static class ViewUtill
+    static class ViewUtill//View에서 필요한 메소드 도구 모음클래스
     {
         public static void PrintTitle(ViewTitle title)
         {
@@ -33,7 +33,7 @@ internal class Program
         public static void PrintPlayerView(Player player)
         { 
             Console.WriteLine($"Lv. {player.Level}");
-            Console.WriteLine($"{player.Level}( {player.JobType} )");
+            Console.WriteLine($"{player.Name}( {player.JobType} )");
             Console.WriteLine($"공격력 : {player.Attack}+({player.AdditionalAttack})");
             Console.WriteLine($"방어력 : {player.Defence}+({player.AdditionalDefence})");
             Console.WriteLine($"체력 : {player.Health}");
@@ -45,14 +45,16 @@ internal class Program
             if (minCount == 0) Console.WriteLine("0. 나가기\n");
             Console.WriteLine("원하시는 행동을 입력해주세요.");
             Console.Write(">>");
+            //커서복귀를 위한 커서위치 저장
             int x = Console.CursorLeft;
             int y = Console.CursorTop;
+
             int result;
             while (true)
             {
                 if (int.TryParse(Console.ReadLine(), out result))
                 {
-                    if (result <= selectionCount && result >= minCount) 
+                    if (result <= selectionCount && result >= minCount)//유효한 입력
                     {
                         if(result == 0) CallView(ViewTitle.마을);
                         else return result;
@@ -62,16 +64,18 @@ internal class Program
                 Console.SetCursorPosition(x,y);
             }
         }
-        public static void PrintItemListView(List<Item> itemList,ViewTitle title)
+        public static void PrintItemListView(List<Item> itemList,ViewTitle title)//다이나믹용 호출 뷰타이틀 매개변수
         {
             Console.WriteLine("[아이템 목록]");
             if (itemList.Count != 0)
             {
-                int[] x = {4,23,35,92,102};
-                int y = Console.CursorTop;
+                int[] x = {4,23,35,92,102}; //요소들 배치를 위한 x좌표들
+                int y = Console.CursorTop;  //현재 y좌표
+
                 int i = 0;
                 foreach (Item item in itemList) 
                 {
+                    //뷰 다이나믹용 조건문
                     if (title==ViewTitle.인벤토리|| title == ViewTitle.상점) Console.Write("- "); 
                     else if(title == ViewTitle.장착관리|| title == ViewTitle.상점구매|| title == ViewTitle.상점판매) Console.Write($"- {i+1}.");
                     Console.SetCursorPosition(x[0], y+i);
@@ -98,8 +102,8 @@ internal class Program
     }
 
     enum ViewTitle { 마을, 상태보기, 인벤토리, 장착관리, 상점, 상점구매, 상점판매, 던전입장, 던전결과,휴식하기  }
-
-    static void CallView(ViewTitle viewTitle)
+    // ViewTitle : View마다 한개씩 구현, View간 이동에도 사용된다.
+    static void CallView(ViewTitle viewTitle)//View이동 메소드
     {
         switch ((int)viewTitle)
         {
@@ -109,7 +113,8 @@ internal class Program
             case 4: StoreView(); break;
             case 5: StoreBuyView(); break;
             case 6: StoreSellView(); break;
-            case 7: DungeonView(); break;          
+            case 7: DungeonView(); break;
+          //case 8: 던전결과뷰는 던전에서만 호출된다.
             case 9: RestView(); break; 
             default: HomeView(); break;
         }
@@ -151,7 +156,7 @@ internal class Program
         switch (ViewUtill.GetUserInput(1, selection.Length))
         {
             case 1: return JobType.전사;
-            default: return JobType.도적;
+            default: return JobType.도적;//도적 2대신 default사용했음
         }
     }
 
@@ -167,6 +172,7 @@ internal class Program
         ViewUtill.PrintViewTitleSelection(selection,5);
         Console.WriteLine("6. 저장하기\n"); 
         int userInput = ViewUtill.GetUserInput(1, 6);
+        //6선택시 저장하고 갱신
         if (userInput == 6) { GameManager.I().GetPlayer().SaveToJson(filePath); CallView(title); }
         CallView(selection[userInput - 1]);
     }
@@ -179,7 +185,7 @@ internal class Program
         ViewUtill.PrintTitle(title);
         ViewUtill.PrintNotice(notice);
         ViewUtill.PrintPlayerView(GameManager.I().GetPlayer());
-        ViewUtill.GetUserInput(0, 0);
+        ViewUtill.GetUserInput(0, 0);//마을가기 입력받기
     }
 
     static void InventoryView()
@@ -213,7 +219,7 @@ internal class Program
         ViewTitle title = ViewTitle.상점;
         string[] notice = ["아이템을 사고 팔 수 있는 상점입니다."];
         ViewTitle[] selection = [ViewTitle.상점구매, ViewTitle.상점판매];
-        List<Item> ShowCase = new List<Item>();
+        List<Item> ShowCase = new List<Item>();//쇼케이스, 카운트 0이어도 보여주기 위한 리스트
         List<Item> PlayerItemList = GameManager.I().GetPlayer().ItemList;
         //쇼케이스에 각 아이템 하나씩 진열
         foreach (ItemName e in Enum.GetValues(typeof(ItemName))) ShowCase.Add(new Item(e,1));
@@ -245,6 +251,7 @@ internal class Program
         Console.WriteLine($"[보유 골드]\n{GameManager.I().GetPlayer().Gold} G");
         ViewUtill.PrintItemListView(ShowCase, title);     
         int userInput = ViewUtill.GetUserInput(0, ShowCase.Count);
+        //SetItemList호출 : 거래 성공bool값 반환, 반환전 거래 로직 동작
         if (!GameManager.I().GetPlayer().SetItemList(ShowCase[userInput-1].name, +1))
         {
             Console.WriteLine("\n소지금액이 부족합니다.");
@@ -263,6 +270,7 @@ internal class Program
         Console.WriteLine($"[보유 골드]\n{GameManager.I().GetPlayer().Gold} G");
         ViewUtill.PrintItemListView(PlayerItemList, title);
         int userInput = ViewUtill.GetUserInput(0, PlayerItemList.Count);
+        //SetItemList호출 : 거래 성공bool값 반환, 반환전 거래 로직 동작
         if (!GameManager.I().GetPlayer().SetItemList(PlayerItemList[userInput - 1].name, -1))
         {
             Console.WriteLine("\n판매에 실패했습니다.");
@@ -295,12 +303,13 @@ internal class Program
         //보상 계산식
         int lostHealth = random.Next(20, 36) - player.Defence - player.AdditionalDefence + dungeonBalance[dungeonLv - 1, 0];
         int rewardGold = dungeonBalance[dungeonLv - 1, 1] + (int)(dungeonBalance[dungeonLv - 1, 1] * ((player.Attack + player.AdditionalAttack) * (random.NextDouble() + 1) / 100 + 1));
+        
         if (player.Defence + player.AdditionalDefence < dungeonBalance[dungeonLv - 1, 0]) //권장방어력보다 낮다면
         {
             if (random.NextDouble() < 0.4) { lostHealth /= 2; rewardGold = 0; isClear = false; }
         }
 
-        //View
+        //View부분
         ViewUtill.PrintTitle(title);
         if (isClear) Console.WriteLine($"축하합니다!!\n{doungeonName[dungeonLv - 1]}을 클리어 하셨습니다.\n");
         else Console.WriteLine($"안타깝게도\n{doungeonName[dungeonLv - 1]}을 실패했습니다.\n");
@@ -312,7 +321,7 @@ internal class Program
         player.Health -= lostHealth;
         player.Gold += lostHealth;
         if (isClear) player.AddExp();
-        ViewUtill.GetUserInput(0, 0);
+        ViewUtill.GetUserInput(0, 0);//마을가기 입력받기
     }
     static void RestView()
     {
@@ -329,8 +338,7 @@ internal class Program
         {
             player.Health = 100;
             player.Gold -= 500;
-            Console.WriteLine("휴식을 완료했습니다.");
-            
+            Console.WriteLine("휴식을 완료했습니다.");    
         }
         else if(userInput == 1 && player.Gold < cost)
         {
@@ -366,7 +374,6 @@ internal class Program
             HomeView();
         }
         public Player GetPlayer() {  return player; }
-
     }
     
     static string filePath = "./Save/SaveFile.json";

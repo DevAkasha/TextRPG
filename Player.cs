@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.IO;
 using static Program;
 
 namespace TextRPG
@@ -46,7 +47,7 @@ namespace TextRPG
             }
         }
 
-        public bool SetItemList(ItemName iN,int OneOrNegOne)
+        public bool SetItemList(ItemName iN,int OneOrNegOne)//OneOrNegOne 사는경우 1 : 파는경우 -1
         {
             var item = ItemList.Find(g => g.name == iN);
             if (OneOrNegOne == 1)
@@ -141,16 +142,16 @@ namespace TextRPG
 
         public void AddExp()
         {
-            if (Exp < Level) Exp++;
+            if (Exp < Level) Exp++;//1레밸 경험치1, 2레밸 경험치2, ...
             else
             {
-                if (Level % 2 == 0) Attack++;
+                if (Level % 2 == 0) Attack++; //2레벨마다 1증가
                 Defence++;
                 Level++;
             }
         }
 
-        public void ReadyToSave()
+        public void ReadyToSave()//세이브하기 위해 ItemSaveInfo 기록
         {
             int i = 0;
             foreach (ItemName e in Enum.GetValues(typeof(ItemName)))
@@ -164,7 +165,7 @@ namespace TextRPG
             ItemSaveInfo[6, 0] = (Armor != null) ? (int)Armor.name : -1;
             ItemSaveInfo[6, 1] = (Weapon != null) ? (int)Weapon.name : -1;
         }
-        public void LoadItem()
+        public void LoadItem()//ItemSaveInfo로 아이템 로드
         {
             ItemList.Clear();
             for (int i = 0; i < Enum.GetValues(typeof(ItemName)).Length; i++)
@@ -173,13 +174,11 @@ namespace TextRPG
                 int itemCount = ItemSaveInfo[i, 1];
                 if (itemCount > 0)ItemList.Add(new Item((ItemName)itemId, itemCount));
             }
-
-            int armorId = ItemSaveInfo[6, 0];
-            int weaponId = ItemSaveInfo[6, 1];
-            Armor = (armorId != -1) ? ItemList.Find(g => (int)g.name == armorId) : null;
-            Weapon = (weaponId != -1) ? ItemList.Find(g => (int)g.name == weaponId) : null;
+            // 장착 아이템 로드
+            Armor = (ItemSaveInfo[6, 0]!= -1) ? ItemList.Find(g => (int)g.name == ItemSaveInfo[6, 0]) : null;
+            Weapon = (ItemSaveInfo[6, 1] != -1) ? ItemList.Find(g => (int)g.name == ItemSaveInfo[6, 1]) : null;
         }
-        public void SaveToJson(string filePath)
+        public void SaveToJson(string filePath) //PlayerSaveData 생성 활용하여 저장
         {
             ReadyToSave();
             PlayerSaveData saveData = new PlayerSaveData
@@ -199,7 +198,7 @@ namespace TextRPG
             string json = JsonConvert.SerializeObject(saveData, Formatting.Indented);
             File.WriteAllText(filePath, json);
         }
-        public static Player LoadFromJson(string filePath)
+        public static Player LoadFromJson(string filePath) 
         {
             if (!File.Exists(filePath))
             {
@@ -207,7 +206,7 @@ namespace TextRPG
                 return null;
             }
 
-            string json = File.ReadAllText(filePath);
+            string json = File.ReadAllText(filePath); //filePath에서 json
 
             PlayerSaveData saveData = JsonConvert.DeserializeObject<PlayerSaveData>(json);
 
