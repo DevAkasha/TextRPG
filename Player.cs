@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System.IO;
+
 
 using static Program;
 
@@ -41,11 +41,6 @@ namespace TextRPG
                     break;
                 case JobType.도적:
                     this.Attack = 20;
-                    this.Defence = 3;
-                    this.Health = 50;
-                    break;
-                case JobType.궁수:
-                    this.Attack = 15;
                     this.Defence = 3;
                     this.Health = 50;
                     break;

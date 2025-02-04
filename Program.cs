@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.IO;
+﻿
 using TextRPG;
 internal class Program
 {
@@ -373,6 +371,6 @@ internal class Program
     
     static string filePath = "./Save/SaveFile.json";
 
-    internal enum JobType { 전사, 도적, 궁수 }
+    internal enum JobType { 전사, 도적}
 }
 
