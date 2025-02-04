@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-
-
 using static Program;
 
 namespace TextRPG

@@ -160,14 +160,14 @@ internal class Program
         ViewTitle title = ViewTitle.마을;
         string[] notice = ["스파르타 마을에 오신 여러분 환영합니다.",
                     "이곳에서 던전으로 들어가기전 활동을 할 수 있습니다."];
-        ViewTitle[] selection = [ViewTitle.상태보기, ViewTitle.인벤토리, ViewTitle.상점, ViewTitle.던전입장];
+        ViewTitle[] selection = [ViewTitle.상태보기, ViewTitle.인벤토리, ViewTitle.상점, ViewTitle.던전입장,ViewTitle.휴식하기];
 
         ViewUtill.PrintTitle(title);
         ViewUtill.PrintNotice(notice);
-        ViewUtill.PrintViewTitleSelection(selection,4);
-        Console.WriteLine("5. 저장하기\n"); 
-        int userInput = ViewUtill.GetUserInput(1, 5);
-        if (userInput == 5) { GameManager.I().GetPlayer().SaveToJson(filePath); CallView(title); }
+        ViewUtill.PrintViewTitleSelection(selection,5);
+        Console.WriteLine("6. 저장하기\n"); 
+        int userInput = ViewUtill.GetUserInput(1, 6);
+        if (userInput == 6) { GameManager.I().GetPlayer().SaveToJson(filePath); CallView(title); }
         CallView(selection[userInput - 1]);
     }
 
