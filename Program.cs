@@ -14,19 +14,11 @@ internal class Program
             foreach (string s in notice) { Console.WriteLine(s); }
             Console.WriteLine("");
         }
-        public static void PrintNormalSelection(string[] selection)
+        public static void PrintSelection<T>(T[] selection)
         {
             for (int i = 1; i <= selection.Length; i++)
             {
-                Console.WriteLine($"{i}. " + selection[i - 1]);
-            }
-            Console.WriteLine("");
-        }
-        public static void PrintViewTitleSelection(ViewTitle[] selection,int count)
-        {
-            for (int i = 1; i <= count; i++)
-            {
-                Console.WriteLine($"{i}. " + selection[i - 1]);
+                Console.WriteLine($"{i}. {selection[i - 1]}");
             }
             Console.WriteLine("");
         }
@@ -133,7 +125,7 @@ internal class Program
         name = Console.ReadLine();
         if(name==null) return ReceiveNameView();
         Console.WriteLine($"입력하신 이름은 {name}입니다.");
-        ViewUtil.PrintNormalSelection(selection);
+        ViewUtil.PrintSelection(selection);
         switch (ViewUtil.GetUserInput(1, selection.Length))
         {
             case 1: return name;
@@ -168,7 +160,7 @@ internal class Program
 
         Console.Clear();
         ViewUtil.PrintNotice(notice);
-        ViewUtil.PrintNormalSelection(selection);
+        ViewUtil.PrintSelection(selection);
         switch(ViewUtil.GetUserInput(1, selection.Length))
         {
             case 1: GameManager.I().isLoadGame = true; break;
@@ -185,7 +177,7 @@ internal class Program
 
         ViewUtil.PrintTitle(title);
         ViewUtil.PrintNotice(notice);
-        ViewUtil.PrintViewTitleSelection(selection,5);
+        ViewUtil.PrintSelection(selection);
         Console.WriteLine("6. 저장하기\n"); 
         int userInput = ViewUtil.GetUserInput(1, 6);
         //6선택시 저장하고 갱신
@@ -213,7 +205,7 @@ internal class Program
         ViewUtil.PrintTitle(title);
         ViewUtil.PrintNotice(notice);
         ViewUtil.PrintItemListView(GameManager.I().GetPlayer().ItemList,title);
-        ViewUtil.PrintViewTitleSelection(selection, 1);
+        ViewUtil.PrintSelection(selection);
         int userInput = ViewUtil.GetUserInput(0, 1);
         CallView(selection[userInput - 1]);
     }
@@ -246,7 +238,7 @@ internal class Program
         ViewUtil.PrintNotice(notice);
         Console.WriteLine($"[보유 골드]\n{GameManager.I().GetPlayer().Gold} G");
         ViewUtil.PrintItemListView(ShowCase, title);
-        ViewUtil.PrintViewTitleSelection(selection, 2);
+        ViewUtil.PrintSelection(selection);
         int userInput = ViewUtil.GetUserInput(0, selection.Length);
         CallView(selection[userInput - 1]);
     }
@@ -309,7 +301,7 @@ internal class Program
                                 "어려운 던전 \t| 방어력 17이상 권장"];
         ViewUtil.PrintTitle(title);
         ViewUtil.PrintNotice(notice);
-        ViewUtil.PrintNormalSelection(selection);
+        ViewUtil.PrintSelection(selection);
         int userInput = ViewUtil.GetUserInput(0, selection.Length);
         DungeonResultView(userInput);
     }
@@ -354,7 +346,7 @@ internal class Program
 
         ViewUtil.PrintTitle(title);
         Console.WriteLine($"{cost} G를 내면 체력을 회복할 수 있습니다. (보유 골드: {player.Gold} G)");
-        ViewUtil.PrintNormalSelection(selection);
+        ViewUtil.PrintSelection(selection);
         int userInput =ViewUtil.GetUserInput(0, selection.Length);
         if (userInput == 1 && player.Gold >= cost)
         {
