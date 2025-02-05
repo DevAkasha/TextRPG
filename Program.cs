@@ -333,7 +333,7 @@ internal class Program
 
         //계산 적용 및 나가기
         player.Health -= lostHealth;
-        player.Gold += lostHealth;
+        player.Gold += rewardGold;
         if (isClear) player.AddExp();
         ViewUtil.GetUserInput(0, 0);//마을가기 입력받기
     }
