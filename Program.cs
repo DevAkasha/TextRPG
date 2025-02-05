@@ -1,4 +1,4 @@
-﻿
+﻿using System.IO;
 using TextRPG;
 internal class Program
 {
@@ -36,7 +36,7 @@ internal class Program
             Console.WriteLine($"{player.Name}( {player.JobType} )");
             Console.WriteLine($"공격력 : {player.Attack}+({player.AdditionalAttack})");
             Console.WriteLine($"방어력 : {player.Defence}+({player.AdditionalDefence})");
-            if(player.Health<0) Console.WriteLine($"체력 : {player.Health}(언데드)");
+            if(player.Health<0) Console.WriteLine($"체력 : {player.Health}(언데드)");//언데드 상태에 던전입장불가
             Console.WriteLine($"체력 : {player.Health}");
             Console.WriteLine($"Gold : {player.Gold}");
             Console.WriteLine("");
@@ -160,6 +160,21 @@ internal class Program
             default: return JobType.도적;//도적 2대신 default사용했음
         }
     }
+    public static void SelectLoadView()
+    {
+        string[] notice = ["스파르타 던전에 또 오셨군요?",
+                    "이어하시겠습니까?"];
+        string[] selection = ["이어하기", "새로하기"];
+
+        Console.Clear();
+        ViewUtill.PrintNotice(notice);
+        ViewUtill.PrintNomalSelection(selection);
+        switch(ViewUtill.GetUserInput(1, selection.Length))
+        {
+            case 1: GameManager.I().isLoadGame = true; break;
+            default: File.Delete(filePath); break;
+        }
+    }
 
     static void HomeView()
     {
@@ -175,7 +190,7 @@ internal class Program
         int userInput = ViewUtill.GetUserInput(1, 6);
         //6선택시 저장하고 갱신
         if (userInput == 6) { GameManager.I().GetPlayer().SaveToJson(filePath); CallView(title); }
-        CallView(selection[userInput - 1]);
+        CallView(selection[userInput - 1]);//셀렉션 순서에 맞는 뷰 호출
     }
 
     static void StateView()
@@ -358,7 +373,7 @@ internal class Program
     static void Main(string[] args)
     {
         GameManager GM = GameManager.I();
-        if (File.Exists(filePath)) GM.isLoadGame = true;
+        if (File.Exists(filePath)) SelectLoadView();
         GM.GameStart();
     }
     public class GameManager
@@ -378,13 +393,13 @@ internal class Program
         {
             if (!isLoadGame) player = new Player(ReceiveNameView(), SelectJobView());
             else player = Player.LoadFromJson(filePath);
-            HomeView();
+            CallView(ViewTitle.마을);
         }
         public Player GetPlayer() {  return player; }
     }
     
     static string filePath = "./Save/SaveFile.json";
-
+    
     internal enum JobType { 전사, 도적}
 }
 
