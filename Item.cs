@@ -15,7 +15,7 @@ namespace TextRPG
         public Item(ItemName n, int c)
         {
             name = n;
-            type = ((int)n >= 100) ? ItemType.무기 : ItemType.방어구;
+            type = ((int)n >= 100) ? ItemType.무기 : ItemType.방어구;//enum value = 방어구 0~99, 무기 100~ 
             switch (n)
             {
                 case ItemName.수련자_갑옷: option = 5; value = 2000; explain = "수련에 도움을 주는 갑옷입니다."; count = c; break;

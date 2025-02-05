@@ -178,10 +178,10 @@ namespace TextRPG
             Armor = (ItemSaveInfo[6, 0]!= -1) ? ItemList.Find(g => (int)g.name == ItemSaveInfo[6, 0]) : null;
             Weapon = (ItemSaveInfo[6, 1] != -1) ? ItemList.Find(g => (int)g.name == ItemSaveInfo[6, 1]) : null;
         }
-        public void SaveToJson(string filePath) //PlayerSaveData 생성 활용하여 저장
+        public void SaveToJson(string filePath) //PlayerSaveData 생성 활용하여 filePath에 저장
         {
             ReadyToSave();
-            PlayerSaveData saveData = new PlayerSaveData
+            PlayerSaveData saveData = new PlayerSaveData 
             {
                 Level = this.Level,
                 Exp = this.Exp,
@@ -195,8 +195,8 @@ namespace TextRPG
                 Gold = this.Gold,
                 ItemSaveInfo = this.ItemSaveInfo
             };
-            string json = JsonConvert.SerializeObject(saveData, Formatting.Indented);
-            File.WriteAllText(filePath, json);
+            string json = JsonConvert.SerializeObject(saveData, Formatting.Indented); //시리얼라이즈
+            File.WriteAllText(filePath, json); //텍스트 기입
         }
         public static Player LoadFromJson(string filePath) 
         {
@@ -206,9 +206,9 @@ namespace TextRPG
                 return null;
             }
 
-            string json = File.ReadAllText(filePath); //filePath에서 json
+            string json = File.ReadAllText(filePath); //filePath에서 json으로 Read
 
-            PlayerSaveData saveData = JsonConvert.DeserializeObject<PlayerSaveData>(json);
+            PlayerSaveData saveData = JsonConvert.DeserializeObject<PlayerSaveData>(json); //디시리얼라이즈
 
             Player loadedPlayer = new Player(saveData.Name, saveData.JobType)
             {
@@ -223,8 +223,8 @@ namespace TextRPG
                 ItemSaveInfo = saveData.ItemSaveInfo
             };
 
-            loadedPlayer.LoadItem();
-
+            loadedPlayer.LoadItem();//saveInfo -> ItemList & Equipment
+             
             return loadedPlayer;
         }
     }  

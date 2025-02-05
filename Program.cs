@@ -98,17 +98,18 @@ internal class Program
     // ViewTitle : View마다 한개씩 구현, View간 이동에도 사용된다.
     static void CallView(ViewTitle viewTitle)//View이동 메소드
     {
-        switch ((int)viewTitle)
+        switch (viewTitle)
         {
-            case 1: StateView(); break;
-            case 2: InventoryView(); break;
-            case 3: EquipmentView(); break;
-            case 4: StoreView(); break;
-            case 5: StoreBuyView(); break;
-            case 6: StoreSellView(); break;
-            case 7: DungeonView(); break;
-          //case 8: 던전결과뷰는 던전에서만 호출된다.
-            case 9: RestView(); break; 
+            case ViewTitle.마을: HomeView(); break;
+            case ViewTitle.상태보기: StateView(); break;
+            case ViewTitle.인벤토리: InventoryView(); break;
+            case ViewTitle.장착관리: EquipmentView(); break;
+            case ViewTitle.상점: StoreView(); break;
+            case ViewTitle.상점구매: StoreBuyView(); break;
+            case ViewTitle.상점판매: StoreSellView(); break;
+            case ViewTitle.던전입장: DungeonView(); break;
+          //case ViewTitle.던전결과: 던전결과뷰는 던전에서만 호출된다.
+            case ViewTitle.휴식하기: RestView(); break; 
             default: HomeView(); break;
         }
     }
@@ -123,7 +124,7 @@ internal class Program
         Console.Clear();
         ViewUtil.PrintNotice(notice);
         name = Console.ReadLine();
-        if(name==null) return ReceiveNameView();
+        if(string.IsNullOrWhiteSpace(name)) return ReceiveNameView();
         Console.WriteLine($"입력하신 이름은 {name}입니다.");
         ViewUtil.PrintSelection(selection);
         switch (ViewUtil.GetUserInput(1, selection.Length))
@@ -149,7 +150,8 @@ internal class Program
         switch (ViewUtil.GetUserInput(1, selection.Length))
         {
             case 1: return JobType.전사;
-            default: return JobType.도적;//도적 2대신 default사용했음
+            case 2: return JobType.도적;
+            default: return JobType.전사;
         }
     }
     public static void SelectLoadView()
@@ -164,7 +166,7 @@ internal class Program
         switch(ViewUtil.GetUserInput(1, selection.Length))
         {
             case 1: GameManager.I().isLoadGame = true; break;
-            default: File.Delete(filePath); break;
+            default: File.Delete(filePath); break;//이 뷰는 시작때만 오기때문에 isLoadGame=false 생략
         }
     }
 
@@ -232,7 +234,11 @@ internal class Program
         //쇼케이스에 각 아이템 하나씩 진열
         foreach (ItemName e in Enum.GetValues(typeof(ItemName))) ShowCase.Add(new Item(e,1));
         //쇼케이스에 보유count 대입
-        foreach (Item i in ShowCase) i.count = PlayerItemList.Find(g=>g.name == i.name)==null? 0: PlayerItemList.Find(g => g.name == i.name).count;
+        foreach (Item i in ShowCase)
+        {
+            var foundItem = PlayerItemList.Find(g => g.name == i.name);
+            i.count = foundItem == null ? 0 : foundItem.count;
+        }
         
         ViewUtil.PrintTitle(title);
         ViewUtil.PrintNotice(notice);
@@ -315,8 +321,10 @@ internal class Program
         Random random = new Random();
 
         //보상 계산식
-        int lostHealth = random.Next(20, 36) - player.Defence - player.AdditionalDefence + dungeonBalance[dungeonLv - 1, 0];
-        int rewardGold = dungeonBalance[dungeonLv - 1, 1] + (int)(dungeonBalance[dungeonLv - 1, 1] * ((player.Attack + player.AdditionalAttack) * (random.NextDouble() + 1) / 100 + 1));
+        int totalDef = player.Defence + player.AdditionalDefence;
+        int totalAtk = player.Attack + player.AdditionalAttack;
+        int lostHealth = random.Next(20, 36) - totalDef + dungeonBalance[dungeonLv - 1, 0];
+        int rewardGold = dungeonBalance[dungeonLv - 1, 1] + (int)(dungeonBalance[dungeonLv - 1, 1] * (totalAtk * (random.NextDouble() + 1) / 100 + 1));
         
         if (player.Defence + player.AdditionalDefence < dungeonBalance[dungeonLv - 1, 0]) //권장방어력보다 낮다면
         {
@@ -371,7 +379,7 @@ internal class Program
     public class GameManager
     {
         private static GameManager gameManager;
-        public static GameManager I()
+        public static GameManager I()//싱글톤 패턴
         {
             if (gameManager == null)
             {
@@ -383,8 +391,9 @@ internal class Program
         public bool isLoadGame = false;
         public void GameStart()
         {
-            if (!isLoadGame) player = new Player(ReceiveNameView(), SelectJobView());
-            else player = Player.LoadFromJson(filePath);
+            //View 2개를 거쳐 리턴값으로 플레이어 초기화
+            if (!isLoadGame) player = new Player(ReceiveNameView(), SelectJobView());            
+            else player = Player.LoadFromJson(filePath); //로드된 플레이어 
             CallView(ViewTitle.마을);
         }
         public Player GetPlayer() {  return player; }
