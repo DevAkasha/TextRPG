@@ -36,6 +36,7 @@ internal class Program
             Console.WriteLine($"{player.Name}( {player.JobType} )");
             Console.WriteLine($"공격력 : {player.Attack}+({player.AdditionalAttack})");
             Console.WriteLine($"방어력 : {player.Defence}+({player.AdditionalDefence})");
+            if(player.Health<0) Console.WriteLine($"체력 : {player.Health}(언데드)");
             Console.WriteLine($"체력 : {player.Health}");
             Console.WriteLine($"Gold : {player.Gold}");
             Console.WriteLine("");
@@ -280,6 +281,12 @@ internal class Program
     }
     static void DungeonView()
     {
+        if (GameManager.I().GetPlayer().Health < 0)
+        {
+            Console.WriteLine("언데드는 던전에 입장할 수 없습니다. \n회복하고 오세요");
+            Thread.Sleep(1200);
+            CallView(ViewTitle.마을);
+        }
         ViewTitle title = ViewTitle.던전입장;
         string[] notice = ["들어갈 던전을 선택해 주세요"];
         string[] selection = ["쉬운 던전 \t| 방어력 5이상 권장",
