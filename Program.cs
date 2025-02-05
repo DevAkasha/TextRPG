@@ -2,7 +2,7 @@
 using TextRPG;
 internal class Program
 {
-    static class ViewUtill//View에서 필요한 메소드 도구 모음클래스
+    static class ViewUtil//View에서 필요한 메소드 도구 모음클래스
     {
         public static void PrintTitle(ViewTitle title)
         {
@@ -14,7 +14,7 @@ internal class Program
             foreach (string s in notice) { Console.WriteLine(s); }
             Console.WriteLine("");
         }
-        public static void PrintNomalSelection(string[] selection)
+        public static void PrintNormalSelection(string[] selection)
         {
             for (int i = 1; i <= selection.Length; i++)
             {
@@ -129,12 +129,12 @@ internal class Program
         string[] selection = ["저장", "취소"];
         
         Console.Clear();
-        ViewUtill.PrintNotice(notice);
+        ViewUtil.PrintNotice(notice);
         name = Console.ReadLine();
         if(name==null) return ReceiveNameView();
         Console.WriteLine($"입력하신 이름은 {name}입니다.");
-        ViewUtill.PrintNomalSelection(selection);
-        switch (ViewUtill.GetUserInput(1, selection.Length))
+        ViewUtil.PrintNormalSelection(selection);
+        switch (ViewUtil.GetUserInput(1, selection.Length))
         {
             case 1: return name;
             default: return ReceiveNameView();
@@ -147,14 +147,14 @@ internal class Program
         JobType[] selection = [JobType.전사, JobType.도적];
 
         Console.Clear();
-        ViewUtill.PrintNotice(notice);
+        ViewUtil.PrintNotice(notice);
         for (int i = 1; i <= selection.Length; i++)
         {
             Console.WriteLine($"{i}. " + selection[i - 1]);
         }
         Console.WriteLine("");
 
-        switch (ViewUtill.GetUserInput(1, selection.Length))
+        switch (ViewUtil.GetUserInput(1, selection.Length))
         {
             case 1: return JobType.전사;
             default: return JobType.도적;//도적 2대신 default사용했음
@@ -167,9 +167,9 @@ internal class Program
         string[] selection = ["이어하기", "새로하기"];
 
         Console.Clear();
-        ViewUtill.PrintNotice(notice);
-        ViewUtill.PrintNomalSelection(selection);
-        switch(ViewUtill.GetUserInput(1, selection.Length))
+        ViewUtil.PrintNotice(notice);
+        ViewUtil.PrintNormalSelection(selection);
+        switch(ViewUtil.GetUserInput(1, selection.Length))
         {
             case 1: GameManager.I().isLoadGame = true; break;
             default: File.Delete(filePath); break;
@@ -183,11 +183,11 @@ internal class Program
                     "이곳에서 던전으로 들어가기전 활동을 할 수 있습니다."];
         ViewTitle[] selection = [ViewTitle.상태보기, ViewTitle.인벤토리, ViewTitle.상점, ViewTitle.던전입장,ViewTitle.휴식하기];
 
-        ViewUtill.PrintTitle(title);
-        ViewUtill.PrintNotice(notice);
-        ViewUtill.PrintViewTitleSelection(selection,5);
+        ViewUtil.PrintTitle(title);
+        ViewUtil.PrintNotice(notice);
+        ViewUtil.PrintViewTitleSelection(selection,5);
         Console.WriteLine("6. 저장하기\n"); 
-        int userInput = ViewUtill.GetUserInput(1, 6);
+        int userInput = ViewUtil.GetUserInput(1, 6);
         //6선택시 저장하고 갱신
         if (userInput == 6) { GameManager.I().GetPlayer().SaveToJson(filePath); CallView(title); }
         CallView(selection[userInput - 1]);//셀렉션 순서에 맞는 뷰 호출
@@ -198,10 +198,10 @@ internal class Program
         ViewTitle title = ViewTitle.상태보기;
         string[] notice = ["캐릭터의 정보가 표시됩니다."];
         
-        ViewUtill.PrintTitle(title);
-        ViewUtill.PrintNotice(notice);
-        ViewUtill.PrintPlayerView(GameManager.I().GetPlayer());
-        ViewUtill.GetUserInput(0, 0);//마을가기 입력받기
+        ViewUtil.PrintTitle(title);
+        ViewUtil.PrintNotice(notice);
+        ViewUtil.PrintPlayerView(GameManager.I().GetPlayer());
+        ViewUtil.GetUserInput(0, 0);//마을가기 입력받기
     }
 
     static void InventoryView()
@@ -210,11 +210,11 @@ internal class Program
         string[] notice = ["보유 중인 아이템을 관리할 수 있습니다."];
         ViewTitle[] selection = [ViewTitle.장착관리];
 
-        ViewUtill.PrintTitle(title);
-        ViewUtill.PrintNotice(notice);
-        ViewUtill.PrintItemListView(GameManager.I().GetPlayer().ItemList,title);
-        ViewUtill.PrintViewTitleSelection(selection, 1);
-        int userInput = ViewUtill.GetUserInput(0, 1);
+        ViewUtil.PrintTitle(title);
+        ViewUtil.PrintNotice(notice);
+        ViewUtil.PrintItemListView(GameManager.I().GetPlayer().ItemList,title);
+        ViewUtil.PrintViewTitleSelection(selection, 1);
+        int userInput = ViewUtil.GetUserInput(0, 1);
         CallView(selection[userInput - 1]);
     }
     static void EquipmentView() 
@@ -223,10 +223,10 @@ internal class Program
         string[] notice = ["보유 중인 아이템을 관리할 수 있습니다."];
         List<Item> equipList = GameManager.I().GetPlayer().ItemList;
 
-        ViewUtill.PrintTitle(title);
-        ViewUtill.PrintNotice(notice);
-        ViewUtill.PrintItemListView(equipList, title);
-        int userInput = ViewUtill.GetUserInput(0, equipList.Count);
+        ViewUtil.PrintTitle(title);
+        ViewUtil.PrintNotice(notice);
+        ViewUtil.PrintItemListView(equipList, title);
+        int userInput = ViewUtil.GetUserInput(0, equipList.Count);
         GameManager.I().GetPlayer().SetEquipment(equipList[userInput-1]);
         CallView(title);
     }
@@ -242,12 +242,12 @@ internal class Program
         //쇼케이스에 보유count 대입
         foreach (Item i in ShowCase) i.count = PlayerItemList.Find(g=>g.name == i.name)==null? 0: PlayerItemList.Find(g => g.name == i.name).count;
         
-        ViewUtill.PrintTitle(title);
-        ViewUtill.PrintNotice(notice);
+        ViewUtil.PrintTitle(title);
+        ViewUtil.PrintNotice(notice);
         Console.WriteLine($"[보유 골드]\n{GameManager.I().GetPlayer().Gold} G");
-        ViewUtill.PrintItemListView(ShowCase, title);
-        ViewUtill.PrintViewTitleSelection(selection, 2);
-        int userInput = ViewUtill.GetUserInput(0, selection.Length);
+        ViewUtil.PrintItemListView(ShowCase, title);
+        ViewUtil.PrintViewTitleSelection(selection, 2);
+        int userInput = ViewUtil.GetUserInput(0, selection.Length);
         CallView(selection[userInput - 1]);
     }
     static void StoreBuyView() 
@@ -262,11 +262,11 @@ internal class Program
         //쇼케이스에 보유count 대입
         foreach (Item i in ShowCase) i.count = PlayerItemList.Find(g => g.name == i.name) == null ? 0 : PlayerItemList.Find(g => g.name == i.name).count;
 
-        ViewUtill.PrintTitle(title);
-        ViewUtill.PrintNotice(notice);
+        ViewUtil.PrintTitle(title);
+        ViewUtil.PrintNotice(notice);
         Console.WriteLine($"[보유 골드]\n{GameManager.I().GetPlayer().Gold} G");
-        ViewUtill.PrintItemListView(ShowCase, title);     
-        int userInput = ViewUtill.GetUserInput(0, ShowCase.Count);
+        ViewUtil.PrintItemListView(ShowCase, title);     
+        int userInput = ViewUtil.GetUserInput(0, ShowCase.Count);
         //SetItemList호출 : 거래 성공bool값 반환, 반환전 거래 로직 동작
         if (!GameManager.I().GetPlayer().SetItemList(ShowCase[userInput-1].name, +1))
         {
@@ -281,11 +281,11 @@ internal class Program
         string[] notice = ["필요없는 아이템을 판매할 수 있습니다."];
         List<Item> PlayerItemList = GameManager.I().GetPlayer().ItemList;
 
-        ViewUtill.PrintTitle(title);
-        ViewUtill.PrintNotice(notice);
+        ViewUtil.PrintTitle(title);
+        ViewUtil.PrintNotice(notice);
         Console.WriteLine($"[보유 골드]\n{GameManager.I().GetPlayer().Gold} G");
-        ViewUtill.PrintItemListView(PlayerItemList, title);
-        int userInput = ViewUtill.GetUserInput(0, PlayerItemList.Count);
+        ViewUtil.PrintItemListView(PlayerItemList, title);
+        int userInput = ViewUtil.GetUserInput(0, PlayerItemList.Count);
         //SetItemList호출 : 거래 성공bool값 반환, 반환전 거래 로직 동작
         if (!GameManager.I().GetPlayer().SetItemList(PlayerItemList[userInput - 1].name, -1))
         {
@@ -307,10 +307,10 @@ internal class Program
         string[] selection = ["쉬운 던전 \t| 방어력 5이상 권장",
                                "일반 던전 \t| 방어력 11이상 권장",
                                 "어려운 던전 \t| 방어력 17이상 권장"];
-        ViewUtill.PrintTitle(title);
-        ViewUtill.PrintNotice(notice);
-        ViewUtill.PrintNomalSelection(selection);
-        int userInput = ViewUtill.GetUserInput(0, selection.Length);
+        ViewUtil.PrintTitle(title);
+        ViewUtil.PrintNotice(notice);
+        ViewUtil.PrintNormalSelection(selection);
+        int userInput = ViewUtil.GetUserInput(0, selection.Length);
         DungeonResultView(userInput);
     }
     static void DungeonResultView(int dungeonLv)
@@ -332,7 +332,7 @@ internal class Program
         }
 
         //View부분
-        ViewUtill.PrintTitle(title);
+        ViewUtil.PrintTitle(title);
         if (isClear) Console.WriteLine($"축하합니다!!\n{doungeonName[dungeonLv - 1]}을 클리어 하셨습니다.\n");
         else Console.WriteLine($"안타깝게도\n{doungeonName[dungeonLv - 1]}을 실패했습니다.\n");
         Console.WriteLine("[탐험 결과]");
@@ -343,7 +343,7 @@ internal class Program
         player.Health -= lostHealth;
         player.Gold += lostHealth;
         if (isClear) player.AddExp();
-        ViewUtill.GetUserInput(0, 0);//마을가기 입력받기
+        ViewUtil.GetUserInput(0, 0);//마을가기 입력받기
     }
     static void RestView()
     {
@@ -352,10 +352,10 @@ internal class Program
         ViewTitle title = ViewTitle.휴식하기;
         string[] selection = ["휴식하기"];
 
-        ViewUtill.PrintTitle(title);
+        ViewUtil.PrintTitle(title);
         Console.WriteLine($"{cost} G를 내면 체력을 회복할 수 있습니다. (보유 골드: {player.Gold} G)");
-        ViewUtill.PrintNomalSelection(selection);
-        int userInput =ViewUtill.GetUserInput(0, selection.Length);
+        ViewUtil.PrintNormalSelection(selection);
+        int userInput =ViewUtil.GetUserInput(0, selection.Length);
         if (userInput == 1 && player.Gold >= cost)
         {
             player.Health = 100;
