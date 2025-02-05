@@ -28,7 +28,7 @@ namespace TextRPG
             this.Level = 1;
             this.Name = n;
             this.JobType = jT;
-            this.Gold = 300000;
+            this.Gold = 3000;
             this.AdditionalAttack = 0;
             this.AdditionalDefence = 0;
             switch (jT)
